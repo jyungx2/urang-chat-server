@@ -7,6 +7,9 @@
  * 4) 'sendMessage' 이벤트 수신 → 같은 방 모두에게 'receiveMessage' 브로드캐스트
  */
 
+// ✅ MongoDB 연결 & 컬렉션 선언
+require("dotenv").config(); // .env 읽기 -> Node.js는 기본적으로 .env 파일을 읽지 않기 때문에 dotenv 패키지를 설치하고 .config()를 호출해줘야 .env내용 로드 가능!
+
 const allowedOrigins = (process.env.CLIENT_URLS || "")
   .split(",")
   .map((s) => s.trim())
@@ -41,8 +44,6 @@ const io = new Server(server, {
   },
 });
 
-// ✅ MongoDB 연결 & 컬렉션 선언
-require("dotenv").config(); // .env 읽기 -> Node.js는 기본적으로 .env 파일을 읽지 않기 때문에 dotenv 패키지를 설치하고 .config()를 호출해줘야 .env내용 로드 가능!
 const { MongoClient, ObjectId } = require("mongodb");
 const { upsertChatRoom } = require("./lib/chat-rooms-util");
 
