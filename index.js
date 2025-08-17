@@ -9,13 +9,14 @@
 
 // ✅ MongoDB 연결 & 컬렉션 선언
 require("dotenv").config(); // .env 읽기 -> Node.js는 기본적으로 .env 파일을 읽지 않기 때문에 dotenv 패키지를 설치하고 .config()를 호출해줘야 .env내용 로드 가능!
+console.log("1️⃣ raw CLIENT_URLS =", JSON.stringify(process.env.CLIENT_URLS));
 
 const allowedOrigins = (process.env.CLIENT_URLS || "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
 
-console.log("CORS allowedOrigins =>", allowedOrigins);
+console.log("2️⃣ CORS allowedOrigins =>", allowedOrigins);
 // CommonJS 문법을 사용 (Node 기본)
 // ES Module을 쓰고 싶다면 package.json에 "type": "module" 추가
 const express = require("express"); // REST·헬스체크 등을 위한 HTTP 프레임워크
@@ -38,7 +39,15 @@ app.use(
 // (2) Socket.io 인스턴스 생성, HTTP 서버에 붙임
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins, // .env에서 설정한 클라이언트 URL들
+    origin(origin, cb) {
+      // 서버 내부/헬스체크 등 Origin이 없는 요청 허용
+      if (!origin) return cb(null, true);
+
+      const ok = allowedOrigins.includes(origin);
+      console.log("3️⃣ CORS check:", { origin, ok });
+      return cb(ok ? null : new Error(`CORS blocked: ${origin}`), ok);
+    },
+
     methods: ["GET", "POST"],
     credentials: true,
   },
