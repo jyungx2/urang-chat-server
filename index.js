@@ -12,6 +12,7 @@ const allowedOrigins = (process.env.CLIENT_URLS || "")
   .map((s) => s.trim())
   .filter(Boolean);
 
+console.log("CORS allowedOrigins =>", allowedOrigins);
 // CommonJS 문법을 사용 (Node 기본)
 // ES Module을 쓰고 싶다면 package.json에 "type": "module" 추가
 const express = require("express"); // REST·헬스체크 등을 위한 HTTP 프레임워크
