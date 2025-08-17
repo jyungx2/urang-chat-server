@@ -7,6 +7,11 @@
  * 4) 'sendMessage' 이벤트 수신 → 같은 방 모두에게 'receiveMessage' 브로드캐스트
  */
 
+const allowedOrigins = (process.env.CLIENT_URLS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 // CommonJS 문법을 사용 (Node 기본)
 // ES Module을 쓰고 싶다면 package.json에 "type": "module" 추가
 const express = require("express"); // REST·헬스체크 등을 위한 HTTP 프레임워크
@@ -20,7 +25,7 @@ const server = http.createServer(app); // express 앱 → 순수 HTTP 서버 변
 // (1) CORS 허용 – Next.js(dev: http://localhost:3000)에서 접근할 수 있게 설정
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins, // .env에서 설정한 클라이언트 URL들
     methods: ["GET", "POST"],
     credentials: true, // 필요 시 쿠키 인증 허용
   })
@@ -29,8 +34,9 @@ app.use(
 // (2) Socket.io 인스턴스 생성, HTTP 서버에 붙임
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Socket Handshake 단계에서도 CORS 허용
+    origin: allowedOrigins, // .env에서 설정한 클라이언트 URL들
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
